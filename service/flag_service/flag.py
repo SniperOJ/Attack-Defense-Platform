@@ -8,8 +8,8 @@ import hashlib
 import sys
 
 flag_salt = "c3944cd0-0f77-4f85-a561-ca9fd57c5c0e"
-spanning = 5 * 60
-playground = "../playground"
+spanning = 1 * 60
+playground = "../../playground"
 
 def md5(data):
     return hashlib.md5(data).hexdigest()
@@ -23,11 +23,9 @@ def update_flag(playground, team_id):
         f.write(flag)
 '''
 
-def update_flag(spanning, team_id):
+def update_flag(spanning, team_id, start_time):
     path = "%s/%s" % (playground, team_id)
     token = open("%s/token" % (path)).read()
-    ticks = int(time.time())
-    start_time = ticks / spanning * spanning
     data = "%s|%s|%s" % (token, start_time, flag_salt)
     flag = "flag{%s}" % md5(data)
     print("set team %d flag to %s" % (team_id, flag))
@@ -35,9 +33,12 @@ def update_flag(spanning, team_id):
         f.write(flag)
 
 def update_all_flag():
+    ticks = int(time.time())
+    start_time = ticks / spanning * spanning
+    print "round: %s" % (time.asctime( time.localtime(start_time)))
     for i in os.listdir(playground):
         if i != ".gitkeep":
-            update_flag(spanning, int(i))
+            update_flag(spanning, int(i), start_time)
 
 def get_token_by_team_id(team_id):
     return open("%s/%s/token" % (playground, team_id)).read().strip()
@@ -72,7 +73,6 @@ def check_flag(token, flag):
 
 def main():
     update_all_flag()
-    print check_flag(sys.argv[1], sys.argv[2])
 
 if __name__ == "__main__":
     main()
