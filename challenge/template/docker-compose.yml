@@ -1,0 +1,30 @@
+version: '2'
+
+services:
+  web:
+    build: .
+    ports:
+      - '__EXTERNAL_PORT___:80'
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./source:/var/www/html
+      - ./logs:/var/log/apache2
+      - ./flag:/flag
+      - ./run.sh:/run.sh
+      - ./config/sshd_config:/etc/ssh/sshd_config
+    entrypoint: /run.sh
+    networks:
+      app_net:
+        ipv4_address: __HOST__
+
+networks:
+  app_net:
+    driver: bridge
+    driver_opts:
+      com.docker.network.enable_ipv6: "false"
+    ipam:
+      driver: default
+      config:
+      - subnet: 172.100.1.0/24
+        gateway: 172.100.1.1
