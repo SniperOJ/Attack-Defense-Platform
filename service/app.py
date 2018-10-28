@@ -2,12 +2,25 @@
 # encoding: utf-8
 
 import web
+import operator
 from flag_service.flag import check_flag
 
 urls = (
-    '/submit', 'submit'
+    '/submit', 'submit',
+    '/score', 'score',
 )
 db = web.database(dbn='sqlite', db='db.sqlite3')
+
+class score:
+    def GET(self):
+        teams = db.select('team')
+        score = dict()
+        for team in teams:
+            score[team.name] = team.score
+        result = ""
+        for i in sorted(score.items(), key=operator.itemgetter(1))[::-1]:
+            result += "%s\t%s\n" % (i[0], i[1])
+        return result
 
 class submit:
     def POST(self):
