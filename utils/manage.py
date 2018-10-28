@@ -159,7 +159,7 @@ class Manager(object):
 
 
 def main():
-    manager = Manager("../playground", "../challenge/template", "ctf")
+    manager = Manager("../playground", "../challenge/do-you-know-phar", "ctf")
     manager.dispatcher(*sys.argv[1:])
 
 if __name__ == "__main__":
