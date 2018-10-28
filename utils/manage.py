@@ -2,6 +2,7 @@
 
 import sys
 import os
+import sqlite3
 import random
 import string
 
@@ -45,10 +46,10 @@ class Manager(object):
         team_folder = "%s/%d" % (self.playground, team_id)
         print("Assigned team id: %d" % (team_id))
         # Assign access cred
-        ctf_password = random_string(0x10)
-        root_password = random_string(0x10)
+        ctf_password = random_string(0x20)
+        root_password = random_string(0x20)
         public_key, private_key = generate_rsa_key_pair()
-        token = random_string(0x100)
+        token = random_string(0x20)
         # Assign IP address
         ip = "%s.%d" % (self.subnet.split(".0/")[0], team_id)
         name = self.name
@@ -82,6 +83,11 @@ class Manager(object):
         print("team folder created")
         print("configuring vaiables")
         self.config_team(team_id, config)
+        print("Create db")
+        db = sqlite3.connect('../service/db.sqlite3')
+        db.execute("INSERT INTO team (name, score) VALUES ('%d', %d)" % (team_id, 1000))
+        db.commit()
+        db.close()
         print("create team envrionment finished")
 
     def config_team(self, team_id, config):
