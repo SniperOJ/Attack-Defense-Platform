@@ -14,13 +14,4 @@ RUN apt install -y \
     php \
     libapache2-mod-php
 
-RUN useradd -d /home/ctf/ -m -p ctf -s /bin/bash ctf
-RUN echo "ctf:ctf" | chpasswd
-
-# Change work directory
-WORKDIR /home/ctf
-
-# Change user
-USER ctf
-
 ENTRYPOINT /run.sh

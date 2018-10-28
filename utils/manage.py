@@ -36,12 +36,13 @@ class Manager(object):
         root_password = random_string(0x10)
         public_key, private_key = generate_rsa_key_pair()
         # Assign IP address
-        subnet = "172.100.1.0/16"
+        subnet = "172.100.1.0/24"
         gateway = "172.100.1.1"
         ip = "%s.%d" % (subnet.split(".0/")[0], team_id)
         # Assign ports
-        service_port = team_id * 5
-        ssh_port = team_id * 5 + 1
+        base_port = 60000
+        service_port = base_port + team_id * 5
+        ssh_port = base_port + team_id * 5 + 1
         config = {
             # Common
             "team_id": team_id,
@@ -72,30 +73,50 @@ class Manager(object):
 
     def config_team(self, team_id, config):
         print("Modifying team %d => \n%s" % (team_id, config))
-        docker_compose_content = open("%s/docker-compose.yml" % (config['team_folder'])).read()
-        docker_compose_content = docker_compose_content.replace(
+        # Docker-compose
+        filename = "%s/docker-compose.yml" % (config['team_folder'])
+        content = open(filename, "r").read()
+        content = content.replace(
             "__SERVICE_EXTERNAL_PORT___", str(config['service_port'])
         )
-        docker_compose_content = docker_compose_content.replace(
+        content = content.replace(
             "__SSH_EXTERNAL_PORT___", str(config['ssh_port'])
         )
-        docker_compose_content = docker_compose_content.replace(
+        content = content.replace(
             "__IP__", config['ip']
         )
-        docker_compose_content = docker_compose_content.replace(
+        content = content.replace(
             "__SUBNET__", config['subnet']
         )
-        docker_compose_content = docker_compose_content.replace(
+        content = content.replace(
             "__GATEWAY__", config['gateway']
         )
-        print docker_compose_content
-        
+        with open(filename, "w") as f:
+            f.write(content)
+        # Run.sh
+        filename = "%s/run.sh" % (config['team_folder'])
+        content = open(filename, "r").read()
+        content = content.replace(
+            "__ROOT_PASSWORD__", str(config['root_password'])
+        )
+        content = content.replace(
+            "__CTF_PASSWORD__", config['ctf_password']
+        )
+        content = content.replace(
+            "__SSH_PUBLIC_KEY__", config['public_key']
+        )
+        with open(filename, "w") as f:
+            f.write(content)
+        # SSH key
+        with open("%s/ssh/id_rsa.pub" % (config['team_folder']), "w+") as f:
+            f.write(config['public_key'])
+        with open("%s/ssh/id_rsa" % (config['team_folder']), "w+") as f:
+            f.write(config['private_key'])
 
     def count_team(self):
         number =  len(os.listdir(self.playground))
         print("Current team number: %d" % (number))
         return number
-
         
     def help(self, func):
         try:
