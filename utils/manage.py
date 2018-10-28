@@ -48,6 +48,7 @@ class Manager(object):
         ctf_password = random_string(0x10)
         root_password = random_string(0x10)
         public_key, private_key = generate_rsa_key_pair()
+        token = random_string(0x100)
         # Assign IP address
         ip = "%s.%d" % (self.subnet.split(".0/")[0], team_id)
         name = self.name
@@ -64,6 +65,7 @@ class Manager(object):
             "root_password":root_password,
             "public_key":public_key,
             "private_key":private_key,
+            "token":token,
             # Net
             "ip":ip,
             "name":name,
@@ -120,6 +122,8 @@ class Manager(object):
             f.write(config['public_key'])
         with open("%s/ssh/id_rsa" % (config['team_folder']), "w+") as f:
             f.write(config['private_key'])
+        with open("%s/token" % (config['team_folder']), "w+") as f:
+            f.write(config['token'])
 
     def count_team(self):
         number =  len(os.listdir(self.playground))
