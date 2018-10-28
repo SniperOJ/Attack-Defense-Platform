@@ -12,6 +12,9 @@ mkdir /home/ctf/.ssh/
 echo '__SSH_PUBLIC_KEY__' > /home/ctf/.ssh/authorized_keys
 chmod 644 /home/ctf/.ssh/authorized_keys
 
+# Change own of web folder
+chown ctf:ctf /var/www/html
+
 # start server
 service apache2 start
 service ssh start
