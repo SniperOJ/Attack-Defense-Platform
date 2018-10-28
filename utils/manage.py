@@ -9,8 +9,8 @@ from Crypto.PublicKey import RSA
 
 def generate_rsa_key_pair(length=2048):
     key = RSA.generate(length)
-    private_key = key.exportKey()
-    public_key = key.publickey().exportKey()
+    private_key = key.exportKey("PEM")
+    public_key = key.publickey().exportKey("OpenSSH")
     return str(public_key), str(private_key)
 
 def random_string(length=0x10):
@@ -18,9 +18,22 @@ def random_string(length=0x10):
     return "".join([random.choice(charset) for i in range(length)])
 
 class Manager(object):
-    def __init__(self, playground, template):
+    def __init__(self, playground, template, name):
         self.playground = playground
         self.template = template
+        self.subnet = "172.100.1.0/24"
+        self.gateway = "172.100.1.254"
+        self.name = name
+
+    def create_network(self):
+        os.system(
+            "docker network create \
+            --driver=bridge \
+            --subnet=%s \
+            --ip-range=%s \
+            --gateway=%s \
+            %s" % (self.subnet, self.subnet, self.gateway, self.name)
+        )
 
     def create_team(self):
         '''
@@ -36,9 +49,8 @@ class Manager(object):
         root_password = random_string(0x10)
         public_key, private_key = generate_rsa_key_pair()
         # Assign IP address
-        subnet = "172.100.1.0/24"
-        gateway = "172.100.1.1"
-        ip = "%s.%d" % (subnet.split(".0/")[0], team_id)
+        ip = "%s.%d" % (self.subnet.split(".0/")[0], team_id)
+        name = self.name
         # Assign ports
         base_port = 60000
         service_port = base_port + team_id * 5
@@ -53,9 +65,8 @@ class Manager(object):
             "public_key":public_key,
             "private_key":private_key,
             # Net
-            "subnet" :subnet,
-            "gateway":gateway,
             "ip":ip,
+            "name":name,
             # Service
             "service_port":service_port,
             "ssh_port":ssh_port,
@@ -83,13 +94,10 @@ class Manager(object):
             "__SSH_EXTERNAL_PORT___", str(config['ssh_port'])
         )
         content = content.replace(
+            "__NAME__", config['name']
+        )
+        content = content.replace(
             "__IP__", config['ip']
-        )
-        content = content.replace(
-            "__SUBNET__", config['subnet']
-        )
-        content = content.replace(
-            "__GATEWAY__", config['gateway']
         )
         with open(filename, "w") as f:
             f.write(content)
@@ -141,7 +149,7 @@ class Manager(object):
 
 
 def main():
-    manager = Manager("../playground", "../challenge/template")
+    manager = Manager("../playground", "../challenge/template", "ctf")
     manager.dispatcher(*sys.argv[1:])
 
 if __name__ == "__main__":

@@ -16,16 +16,10 @@ services:
       - ./config/sshd_config:/etc/ssh/sshd_config
     entrypoint: /run.sh
     networks:
-      app_net:
+      default:
         ipv4_address: __IP__
 
 networks:
-  app_net:
-    driver: bridge
-    driver_opts:
-      com.docker.network.enable_ipv6: "false"
-    ipam:
-      driver: default
-      config:
-      - subnet: __SUBNET__
-        gateway: __GATEWAY__
+  default:
+    external:
+      name: __NAME__
