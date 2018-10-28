@@ -4,7 +4,8 @@ services:
   web:
     build: .
     ports:
-      - '__EXTERNAL_PORT___:80'
+      - '__SERVICE_EXTERNAL_PORT___:80'
+      - '__SSH_EXTERNAL_PORT___:22'
     stdin_open: true
     tty: true
     volumes:
@@ -16,7 +17,7 @@ services:
     entrypoint: /run.sh
     networks:
       app_net:
-        ipv4_address: __HOST__
+        ipv4_address: __IP__
 
 networks:
   app_net:
