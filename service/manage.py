@@ -26,6 +26,14 @@ class Manager(object):
         self.gateway = "172.100.1.254"
         self.name = name
 
+    def init_db(self):
+        db_filename = "db.sqlite3"
+        try:
+            os.remove("%s" % (db_filename))
+        except Exception as e:
+            pass
+        os.system("sqlite3 %s < db.sql" % (db_filename))
+
     def create_network(self):
         os.system(
             "docker network create \
@@ -84,7 +92,7 @@ class Manager(object):
         print("configuring vaiables")
         self.config_team(team_id, config)
         print("Create db")
-        db = sqlite3.connect('../service/db.sqlite3')
+        db = sqlite3.connect('db.sqlite3')
         db.execute("INSERT INTO team (name, score) VALUES ('%d', %d)" % (team_id, 1000))
         db.commit()
         db.close()
@@ -159,7 +167,7 @@ class Manager(object):
 
 
 def main():
-    manager = Manager("../playground", "../challenge/do-you-know-phar", "ctf")
+    manager = Manager("../playground", "../challenges/template", "ctf")
     manager.dispatcher(*sys.argv[1:])
 
 if __name__ == "__main__":
