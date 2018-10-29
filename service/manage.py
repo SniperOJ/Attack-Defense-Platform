@@ -50,7 +50,7 @@ class Manager(object):
             create_team src dst
         '''
         # Assign team id
-        team_id = self.count_team()
+        team_id = self.available_team_id()
         team_folder = "%s/%d" % (self.playground, team_id)
         print("Assigned team id: %d" % (team_id))
         # Assign access cred
@@ -139,10 +139,15 @@ class Manager(object):
         with open("%s/token" % (config['team_folder']), "w+") as f:
             f.write(config['token'])
 
-    def count_team(self):
-        number =  len(os.listdir(self.playground))
-        print("Current team number: %d" % (number))
-        return number
+    def available_team_id(self):
+        folder_list = os.listdir(self.playground)
+        ID = 0
+        while True:
+            if "%d" % (ID) not in folder_list:
+                print("Current team number: %d" % (number))
+                return ID
+            else:
+                ID += 1
         
     def help(self, func):
         try:
@@ -167,7 +172,7 @@ class Manager(object):
 
 
 def main():
-    manager = Manager("../playground", "../challenges/2018-Jinan-Train/soft-php", "ctf")
+    manager = Manager("../playground", "../challenges/2018-Jinan-Train/zblog", "ctf")
     manager.dispatcher(*sys.argv[1:])
 
 if __name__ == "__main__":
