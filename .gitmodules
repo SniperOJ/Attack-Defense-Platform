@@ -1,0 +1,3 @@
+[submodule "challenges"]
+	path = challenges
+	url = https://github.com/SniperOJ/Attack-Defense-Challenges
