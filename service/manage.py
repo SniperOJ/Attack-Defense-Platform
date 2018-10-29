@@ -167,7 +167,7 @@ class Manager(object):
 
 
 def main():
-    manager = Manager("../playground", "../challenges/template", "ctf")
+    manager = Manager("../playground", "../challenges/2018-Jinan-Train/simple-php", "ctf")
     manager.dispatcher(*sys.argv[1:])
 
 if __name__ == "__main__":
