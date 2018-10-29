@@ -9,7 +9,7 @@ import sys
 
 flag_salt = "c3944cd0-0f77-4f85-a561-ca9fd57c5c0e"
 spanning = 1 * 60
-playground = "../../playground"
+playground = "../playground"
 
 def md5(data):
     return hashlib.md5(data).hexdigest()

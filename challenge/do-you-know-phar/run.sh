@@ -15,6 +15,9 @@ chmod 644 /home/ctf/.ssh/authorized_keys
 # Change own of web folder
 chown ctf:ctf /var/www/html
 
+# Add write permission
+chmod o+w /var/www/html/log
+
 # start server
 service apache2 start
 service ssh start

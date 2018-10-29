@@ -3,7 +3,7 @@
 
 import web
 import operator
-from flag_service.flag import check_flag
+from flag import check_flag
 
 urls = (
     '/submit', 'submit',
